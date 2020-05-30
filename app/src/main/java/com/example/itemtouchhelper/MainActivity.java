@@ -1,9 +1,14 @@
 package com.example.itemtouchhelper;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -44,6 +49,36 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView movieListView = findViewById(R.id.movie_list);
         movieListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        movieListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         movieListView.setAdapter(new SimpleTextAdapter(movieList));
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP|ItemTouchHelper.DOWN, ItemTouchHelper.START|ItemTouchHelper.END) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return ((SimpleTextAdapter) recyclerView.getAdapter()).moveItem(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                ((SimpleTextAdapter.SimpleTextViewHolder) viewHolder).remove();
+            }
+
+            @Override
+            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+                super.onSelectedChanged(viewHolder, actionState);
+                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                    viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
+                }
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                viewHolder.itemView.setBackgroundColor(Color.WHITE);
+            }
+
+
+        });
+        itemTouchHelper.attachToRecyclerView(movieListView);
     }
 }

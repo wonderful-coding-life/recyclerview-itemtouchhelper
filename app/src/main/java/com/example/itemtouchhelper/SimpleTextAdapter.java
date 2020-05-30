@@ -36,6 +36,19 @@ public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.Si
         return 0;
     }
 
+    public boolean moveItem(int fromPosition, int toPosition) {
+        String simpleText = simpleTextList.get(fromPosition);
+        simpleTextList.remove(fromPosition);
+        simpleTextList.add(toPosition, simpleText);
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
+
+    public void removeItem(int position) {
+        simpleTextList.remove(position);
+        notifyItemRemoved(position);
+    }
+
     public class SimpleTextViewHolder extends RecyclerView.ViewHolder {
         private TextView simpleText;
 
@@ -46,6 +59,10 @@ public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.Si
 
         public void bind(String city) {
             simpleText.setText(city);
+        }
+
+        public void remove() {
+            removeItem(getAdapterPosition());
         }
     }
 }
