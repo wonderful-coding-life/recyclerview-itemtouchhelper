@@ -1,19 +1,26 @@
 package com.example.itemtouchhelper;
 
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
 
 public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.SimpleTextViewHolder> {
     private List<String> simpleTextList;
+    private ItemTouchHelper itemTouchHelper;
 
     public SimpleTextAdapter(List<String> simpleTextList) {
         this.simpleTextList = simpleTextList;
+    }
+
+    public void setItemTouchHelper(ItemTouchHelper itemTouchHelper) {
+        this.itemTouchHelper = itemTouchHelper;
     }
 
     @NonNull
@@ -49,20 +56,58 @@ public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.Si
         notifyItemRemoved(position);
     }
 
-    public class SimpleTextViewHolder extends RecyclerView.ViewHolder {
+    public class SimpleTextViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, GestureDetector.OnGestureListener {
         private TextView simpleText;
+        private GestureDetector gestureDetector;
 
         public SimpleTextViewHolder(@NonNull View itemView) {
             super(itemView);
             simpleText = itemView.findViewById(R.id.simple_text);
+            gestureDetector = new GestureDetector(itemView.getContext(), this);
+            itemView.findViewById(R.id.drag_handle).setOnTouchListener(this);
         }
 
         public void bind(String city) {
             simpleText.setText(city);
         }
 
-        public void remove() {
-            removeItem(getAdapterPosition());
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return gestureDetector.onTouchEvent(event);
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            if (itemTouchHelper != null) {
+                itemTouchHelper.startDrag(this);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return false;
         }
     }
 }
