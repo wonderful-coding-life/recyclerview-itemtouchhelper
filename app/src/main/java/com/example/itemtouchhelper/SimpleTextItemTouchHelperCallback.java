@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SimpleTextItemTouchHelperCallback extends ItemTouchHelper.Callback {
-    private SimpleTextAdapter adapter;
+    private ItemTouchListener listener;
 
-    public SimpleTextItemTouchHelperCallback(SimpleTextAdapter adapter) {
-        this.adapter = adapter;
+    public SimpleTextItemTouchHelperCallback(ItemTouchListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -21,12 +21,12 @@ public class SimpleTextItemTouchHelperCallback extends ItemTouchHelper.Callback 
 
     @Override
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-        return adapter.moveItem(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+        return listener.moveItem(viewHolder.getAdapterPosition(), target.getAdapterPosition());
     }
 
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-        adapter.removeItem(viewHolder.getAdapterPosition());
+        listener.removeItem(viewHolder.getAdapterPosition());
     }
 
     @Override
@@ -46,5 +46,10 @@ public class SimpleTextItemTouchHelperCallback extends ItemTouchHelper.Callback 
     @Override
     public boolean isLongPressDragEnabled() {
         return false;
+    }
+
+    public interface ItemTouchListener {
+        boolean moveItem(int fromPosition, int toPosition);
+        void removeItem(int position);
     }
 }

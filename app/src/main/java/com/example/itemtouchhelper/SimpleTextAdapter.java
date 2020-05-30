@@ -7,20 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.SimpleTextViewHolder> {
+public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.SimpleTextViewHolder> implements SimpleTextItemTouchHelperCallback.ItemTouchListener {
     private List<String> simpleTextList;
-    private ItemTouchHelper itemTouchHelper;
+    private OnStartDragViewHolderListener listener;
 
-    public SimpleTextAdapter(List<String> simpleTextList) {
+    public SimpleTextAdapter(List<String> simpleTextList, OnStartDragViewHolderListener listener) {
         this.simpleTextList = simpleTextList;
-    }
-
-    public void setItemTouchHelper(ItemTouchHelper itemTouchHelper) {
-        this.itemTouchHelper = itemTouchHelper;
+        this.listener = listener;
     }
 
     @NonNull
@@ -43,6 +39,7 @@ public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.Si
         return 0;
     }
 
+    @Override
     public boolean moveItem(int fromPosition, int toPosition) {
         String simpleText = simpleTextList.get(fromPosition);
         simpleTextList.remove(fromPosition);
@@ -51,6 +48,7 @@ public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.Si
         return true;
     }
 
+    @Override
     public void removeItem(int position) {
         simpleTextList.remove(position);
         notifyItemRemoved(position);
@@ -78,8 +76,8 @@ public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.Si
 
         @Override
         public boolean onDown(MotionEvent e) {
-            if (itemTouchHelper != null) {
-                itemTouchHelper.startDrag(this);
+            if (listener != null) {
+                listener.onStartDragViewHolder(this);
                 return true;
             }
             return false;
@@ -109,5 +107,9 @@ public class SimpleTextAdapter extends RecyclerView.Adapter<SimpleTextAdapter.Si
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             return false;
         }
+    }
+
+    public interface OnStartDragViewHolderListener {
+        void onStartDragViewHolder(RecyclerView.ViewHolder viewHolder);
     }
 }

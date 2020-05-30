@@ -11,9 +11,10 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SimpleTextAdapter.OnStartDragViewHolderListener {
 
     private List<String> movieList = new ArrayList<>();
+    private ItemTouchHelper itemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +48,15 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView movieListView = findViewById(R.id.movie_list);
         movieListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         movieListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        SimpleTextAdapter adapter = new SimpleTextAdapter(movieList);
+        SimpleTextAdapter adapter = new SimpleTextAdapter(movieList, this);
         movieListView.setAdapter(adapter);
 
-        // set item touch helper for dragging and swiping
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleTextItemTouchHelperCallback(adapter));
+        itemTouchHelper = new ItemTouchHelper(new SimpleTextItemTouchHelperCallback(adapter));
         itemTouchHelper.attachToRecyclerView(movieListView);
-        adapter.setItemTouchHelper(itemTouchHelper);
+    }
+
+    @Override
+    public void onStartDragViewHolder(RecyclerView.ViewHolder viewHolder) {
+        itemTouchHelper.startDrag(viewHolder);
     }
 }
